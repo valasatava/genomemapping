@@ -9,9 +9,14 @@ public class AppConstants {
 
     public static final String PATH_PING = PATH_SEPARATOR + "ping";
 
-    public static final String PATH_COORDINATES = PATH_SEPARATOR + "coordinates";
+    // root
     public static final String PATH_MAPPING = PATH_SEPARATOR + "mapping";
+
+    // resources
+    public static final String PATH_COORDINATES = PATH_SEPARATOR + "coordinates";
+    public static final String PATH_STRUCTURE = PATH_SEPARATOR + "structure";
+
+    // end points
     public static final String PATH_GENOMIC = PATH_SEPARATOR + "genomic";
 
-    public static final String PATH_POSITION = PATH_SEPARATOR + "position";
 }

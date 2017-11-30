@@ -18,20 +18,19 @@ import java.util.List;
  */
 public class CoordinatesServiceImpl implements CoordinatesService {
 
-    private CoordinatesDao coordinatesDao;
+    private CoordinatesDao dao;
 
     public static final String ETAG_PREFIX = "coordinates-";
 
     public CoordinatesServiceImpl() {
 
-        super();
-        coordinatesDao = new CoordinatesDaoMongoImpl();
+        dao = new CoordinatesDaoMongoImpl();
     }
 
     @Override
     public Response mapGeneticPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, HttpHeaders headers) throws Exception {
 
-        List<Position> results = coordinatesDao.mapGeneticPosition(taxonomyId, chromosome, position);
+        List<Position> results = dao.mapGeneticPosition(taxonomyId, chromosome, position);
 
         ResponseMessagePositions responseMsg = new ResponseMessagePositions();
         responseMsg.setResults(results);
