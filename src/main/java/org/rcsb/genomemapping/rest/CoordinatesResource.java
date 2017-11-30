@@ -40,7 +40,7 @@ public class CoordinatesResource {
     @GET
     @Path(AppConstants.PATH_GENOMIC+ AppConstants.PATH_SEPARATOR )
     @Produces({MediaType.APPLICATION_JSON + "; charset=utf-8"})
-    public Response showIt(
+    public Response mapGeneticPosition(
             @Context UriInfo uriInfo,
             @Context Request request,
             @QueryParam(value = "taxonomyId") final int taxonomyId,
@@ -48,6 +48,6 @@ public class CoordinatesResource {
             @QueryParam(value = "position") final int position,
             @Context HttpHeaders headers) throws Exception
     {
-        return coordinatesService.getResidueByGeneticPosition(uriInfo, request, taxonomyId, chromosome, position, headers);
+        return coordinatesService.mapGeneticPosition(uriInfo, request, taxonomyId, chromosome, position, headers);
     }
 }

@@ -33,7 +33,7 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
     }
 
     @Override
-    public List<Position> getResidueByGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception {
+    public List<Position> mapGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception {
 
         collection = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_TRANSCRIPTS_TO_ISOFORMS + "_" + taxonomyId);
         query = Arrays.asList(

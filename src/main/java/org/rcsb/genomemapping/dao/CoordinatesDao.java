@@ -8,5 +8,5 @@ import java.util.List;
  */
 public interface CoordinatesDao {
 
-    public List<Position> getResidueByGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception;
+    public List<Position> mapGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception;
 }
