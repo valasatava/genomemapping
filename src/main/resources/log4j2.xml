@@ -27,6 +27,12 @@
 			<appender-ref ref="file"/>
 		</root>
 
+		<!-- Mongo -->
+		<Logger name="org.mongodb.driver" level="error" additivity="false">
+			<appender-ref ref="console"/>
+			<appender-ref ref="file"/>
+		</Logger>
+		
 		<!-- Spark -->
 		<Logger name="org.apache.spark" level="error" additivity="false">
 			<appender-ref ref="console"/>
