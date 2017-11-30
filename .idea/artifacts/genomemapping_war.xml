@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="genomemapping:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="genomemapping.war">
+      <element id="artifact" artifact-name="genomemapping:war exploded" />
+    </root>
+  </artifact>
+</component>
