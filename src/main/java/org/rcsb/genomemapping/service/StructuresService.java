@@ -11,4 +11,6 @@ import javax.ws.rs.core.UriInfo;
 public interface StructuresService {
 
     Response getStructuresByGeneName(UriInfo uriInfo, Request request, String name, HttpHeaders headers);
+
+    Response getStructuresByGeneId(UriInfo uriInfo, Request request, String id, HttpHeaders headers);
 }

@@ -51,11 +51,12 @@ public class StructuresResource {
             @QueryParam(value = "name") final String name,
             @Context HttpHeaders headers) throws Exception
     {
-        if (id != null) {
-            return null;
-        }
+        if (id != null)
+            return service.getStructuresByGeneId(uriInfo, request, id, headers);
+
         else if (name != null)
             return service.getStructuresByGeneName(uriInfo, request, name, headers);
+
         else
             return common.invalidParameter(headers);
     }

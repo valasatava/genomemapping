@@ -26,4 +26,10 @@ public class StructuresServiceImpl implements StructuresService {
 
         return null;
     }
+
+    @Override
+    public Response getStructuresByGeneId(UriInfo uriInfo, Request request, String id, HttpHeaders headers) {
+
+        return null;
+    }
 }
