@@ -7,16 +7,18 @@ public class AppConstants {
 
     public static final String PATH_SEPARATOR = "/";
 
-    public static final String PATH_PING = PATH_SEPARATOR + "ping";
-
-    // root
+    // ROOT
     public static final String PATH_MAPPING = PATH_SEPARATOR + "mapping";
 
-    // resources
+    // RESOURCES
     public static final String PATH_COORDINATES = PATH_SEPARATOR + "coordinates";
+    public static final String PATH_STRUCTURES = PATH_SEPARATOR + "structures";
+    public static final String PATH_GENES = PATH_SEPARATOR + "genes";
+
+    // END POINTS
+    public static final String PATH_PING = PATH_SEPARATOR + "ping";
     public static final String PATH_STRUCTURE = PATH_SEPARATOR + "structure";
-
-    // end points
+    public static final String PATH_GENE = PATH_SEPARATOR + "gene";
     public static final String PATH_GENOMIC = PATH_SEPARATOR + "genomic";
-
+    public static final String PATH_RESIDUE = PATH_SEPARATOR + "residue";
 }
