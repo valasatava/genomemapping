@@ -2,9 +2,9 @@ package org.rcsb.genomemapping.service;
 
 import org.rcsb.genomemapping.dao.CoordinatesDao;
 import org.rcsb.genomemapping.dao.CoordinatesDaoMongoImpl;
+import org.rcsb.genomemapping.model.Position;
 import org.rcsb.genomemapping.response.ResponseMessagePositions;
 import org.rcsb.genomemapping.utils.AppHelper;
-import org.rcsb.mojave.genomemapping.models.Position;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;

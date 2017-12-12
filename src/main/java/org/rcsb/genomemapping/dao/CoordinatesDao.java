@@ -1,6 +1,7 @@
 package org.rcsb.genomemapping.dao;
 
-import org.rcsb.mojave.genomemapping.models.Position;
+import org.rcsb.genomemapping.model.Position;
+
 import java.util.List;
 
 /**

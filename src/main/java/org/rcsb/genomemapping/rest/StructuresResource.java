@@ -5,6 +5,7 @@ import org.rcsb.genomemapping.service.CommonServiceImpl;
 import org.rcsb.genomemapping.service.StructuresService;
 import org.rcsb.genomemapping.service.StructuresServiceImpl;
 import org.rcsb.genomemapping.utils.AppConstants;
+import org.rcsb.genomemapping.utils.BooleanQueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ import java.util.Date;
  * Created by Yana Valasatava on 11/15/17.
  */
 
-@Path(AppConstants.PATH_MAPPING + AppConstants.PATH_STRUCTURES)
+@Path(AppConstants.PATH_STRUCTURES)
 public class StructuresResource {
 
     private static final Logger logger = LoggerFactory.getLogger(StructuresResource.class);
@@ -42,22 +43,38 @@ public class StructuresResource {
     }
 
     @GET
-    @Path(AppConstants.PATH_GENE)
+    @Path(AppConstants.PATH_EXONS)
     @Produces({MediaType.APPLICATION_JSON + "; charset=utf-8"})
     public Response mapToStructures(
             @Context UriInfo uriInfo,
             @Context Request request,
+            @QueryParam(value = "taxonomyId") final int taxonomyId,
             @QueryParam(value = "id") final String id,
             @QueryParam(value = "name") final String name,
+            @QueryParam(value = "canonical") final String canonical,
             @Context HttpHeaders headers) throws Exception
     {
         if (id != null)
-            return service.getStructuresByGeneId(uriInfo, request, id, headers);
+            return service.getStructuresByGeneId(uriInfo, request, taxonomyId, id, BooleanQueryParam.valueOf(canonical), headers);
 
         else if (name != null)
-            return service.getStructuresByGeneName(uriInfo, request, name, headers);
+            return service.getStructuresByGeneName(uriInfo, request, taxonomyId, name, BooleanQueryParam.valueOf(canonical), headers);
 
         else
             return common.invalidParameter(headers);
+    }
+
+    @GET
+    @Path( AppConstants.PATH_GENOMIC )
+    @Produces({MediaType.APPLICATION_JSON + "; charset=utf-8"})
+    public Response mapGeneticPosition(
+            @Context UriInfo uriInfo,
+            @Context Request request,
+            @QueryParam(value = "taxonomyId") final int taxonomyId,
+            @QueryParam(value = "chromosome") final String chromosome,
+            @QueryParam(value = "position") final int position,
+            @Context HttpHeaders headers) throws Exception
+    {
+        return service.mapGenomicPositionToStructures(uriInfo, request, taxonomyId, chromosome, position, headers);
     }
 }

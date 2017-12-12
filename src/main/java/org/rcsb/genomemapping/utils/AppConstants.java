@@ -19,6 +19,8 @@ public class AppConstants {
     public static final String PATH_PING = PATH_SEPARATOR + "ping";
     public static final String PATH_STRUCTURE = PATH_SEPARATOR + "structure";
     public static final String PATH_GENE = PATH_SEPARATOR + "gene";
+    public static final String PATH_EXONS = PATH_SEPARATOR + "exons";
     public static final String PATH_GENOMIC = PATH_SEPARATOR + "genomic";
     public static final String PATH_RESIDUE = PATH_SEPARATOR + "residue";
+    public static final String PATH_POSITION = PATH_SEPARATOR + "position";
 }

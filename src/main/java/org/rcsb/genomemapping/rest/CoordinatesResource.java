@@ -18,7 +18,7 @@ import java.util.Date;
  * Created by Yana Valasatava on 11/15/17.
  */
 
-@Path(AppConstants.PATH_MAPPING+AppConstants.PATH_COORDINATES)
+@Path(AppConstants.PATH_COORDINATES)
 public class CoordinatesResource {
 
     private CoordinatesService coordinatesService;
