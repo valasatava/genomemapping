@@ -1,6 +1,7 @@
 package org.rcsb.genomemapping.dao;
 
-import org.rcsb.mojave.genomemapping.GenomicToStructureMapping;
+import org.rcsb.mojave.genomemapping.MultipleFeaturesMap;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 
 import java.util.List;
 
@@ -9,9 +10,9 @@ import java.util.List;
  */
 public interface StructuresDao {
 
-    List<GenomicToStructureMapping> getStructuresByGeneName(int taxonomyId, String geneName, boolean canonical);
+    List<MultipleFeaturesMap> getStructuresByGeneName(int taxonomyId, String geneName, boolean canonical);
 
-    List<GenomicToStructureMapping> getStructuresByGeneId(int taxonomyId, String geneId, boolean canonical);
+    List<MultipleFeaturesMap> getStructuresByGeneId(int taxonomyId, String geneId, boolean canonical);
 
-    List<GenomicToStructureMapping> getStructuresByGeneticPosition(int taxonomyId, String chromosome, int position);
+    List<PositionPropertyMap> getStructuresByGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical);
 }

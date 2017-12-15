@@ -73,8 +73,9 @@ public class StructuresResource {
             @QueryParam(value = "taxonomyId") final int taxonomyId,
             @QueryParam(value = "chromosome") final String chromosome,
             @QueryParam(value = "position") final int position,
+            @QueryParam(value = "canonical") final String canonical,
             @Context HttpHeaders headers) throws Exception
     {
-        return service.mapGenomicPositionToStructures(uriInfo, request, taxonomyId, chromosome, position, headers);
+        return service.getStructuresByGenomicPosition(uriInfo, request, taxonomyId, chromosome, position, BooleanQueryParam.valueOf(canonical), headers);
     }
 }

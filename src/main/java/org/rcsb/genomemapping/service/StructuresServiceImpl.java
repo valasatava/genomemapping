@@ -2,10 +2,12 @@ package org.rcsb.genomemapping.service;
 
 import org.rcsb.genomemapping.dao.StructuresDao;
 import org.rcsb.genomemapping.dao.StructuresDaoMongoImpl;
-import org.rcsb.genomemapping.response.ResponseMessageStructures;
+import org.rcsb.genomemapping.response.ResponseMessageFeatures;
+import org.rcsb.genomemapping.response.ResponseMessagePositions;
 import org.rcsb.genomemapping.utils.AppHelper;
 import org.rcsb.genomemapping.utils.BooleanQueryParam;
-import org.rcsb.mojave.genomemapping.GenomicToStructureMapping;
+import org.rcsb.mojave.genomemapping.MultipleFeaturesMap;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -27,9 +29,9 @@ public class StructuresServiceImpl implements StructuresService {
     @Override
     public Response getStructuresByGeneName(UriInfo uriInfo, Request request, int taxonomyId, String name, BooleanQueryParam canonical, HttpHeaders headers) {
 
-        List<GenomicToStructureMapping> results = dao.getStructuresByGeneName(taxonomyId, name, canonical.getValue());
+        List<MultipleFeaturesMap> results = dao.getStructuresByGeneName(taxonomyId, name, canonical.getValue());
 
-        ResponseMessageStructures responseMsg = new ResponseMessageStructures();
+        ResponseMessageFeatures responseMsg = new ResponseMessageFeatures();
         responseMsg.setResults(results);
         responseMsg.setCount(results.size());
 
@@ -44,9 +46,9 @@ public class StructuresServiceImpl implements StructuresService {
     @Override
     public Response getStructuresByGeneId(UriInfo uriInfo, Request request, int taxonomyId, String id, BooleanQueryParam canonical, HttpHeaders headers) {
 
-        List<GenomicToStructureMapping> results = dao.getStructuresByGeneId(taxonomyId, id, canonical.getValue());
+        List<MultipleFeaturesMap> results = dao.getStructuresByGeneId(taxonomyId, id, canonical.getValue());
 
-        ResponseMessageStructures responseMsg = new ResponseMessageStructures();
+        ResponseMessageFeatures responseMsg = new ResponseMessageFeatures();
         responseMsg.setResults(results);
         responseMsg.setCount(results.size());
 
@@ -59,11 +61,11 @@ public class StructuresServiceImpl implements StructuresService {
     }
 
     @Override
-    public Response mapGenomicPositionToStructures(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, HttpHeaders headers) {
+    public Response getStructuresByGenomicPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) {
 
-        List<GenomicToStructureMapping> results = dao.getStructuresByGeneticPosition(taxonomyId, chromosome, position);
+        List<PositionPropertyMap> results = dao.getStructuresByGeneticPosition(taxonomyId, chromosome, position, canonical.getValue());
 
-        ResponseMessageStructures responseMsg = new ResponseMessageStructures();
+        ResponseMessagePositions responseMsg = new ResponseMessagePositions();
         responseMsg.setResults(results);
         responseMsg.setCount(results.size());
 

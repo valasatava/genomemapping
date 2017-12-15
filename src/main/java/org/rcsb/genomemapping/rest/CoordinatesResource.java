@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.rcsb.genomemapping.service.CoordinatesService;
 import org.rcsb.genomemapping.service.CoordinatesServiceImpl;
 import org.rcsb.genomemapping.utils.AppConstants;
+import org.rcsb.genomemapping.utils.BooleanQueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +22,11 @@ import java.util.Date;
 @Path(AppConstants.PATH_COORDINATES)
 public class CoordinatesResource {
 
-    private CoordinatesService coordinatesService;
+    private CoordinatesService service;
     private static final Logger logger = LoggerFactory.getLogger(CoordinatesResource.class);
 
     public CoordinatesResource() {
-        coordinatesService = new CoordinatesServiceImpl();
+        service = new CoordinatesServiceImpl();
     }
 
     @GET
@@ -38,7 +39,7 @@ public class CoordinatesResource {
     }
 
     @GET
-    @Path(AppConstants.PATH_GENOMIC+ AppConstants.PATH_SEPARATOR )
+    @Path(AppConstants.PATH_GENOMIC + AppConstants.PATH_SEPARATOR )
     @Produces({MediaType.APPLICATION_JSON + "; charset=utf-8"})
     public Response mapGeneticPosition(
             @Context UriInfo uriInfo,
@@ -46,8 +47,9 @@ public class CoordinatesResource {
             @QueryParam(value = "taxonomyId") final int taxonomyId,
             @QueryParam(value = "chromosome") final String chromosome,
             @QueryParam(value = "position") final int position,
+            @QueryParam(value = "canonical") final String canonical,
             @Context HttpHeaders headers) throws Exception
     {
-        return coordinatesService.mapGeneticPosition(uriInfo, request, taxonomyId, chromosome, position, headers);
+        return service.mapGeneticPosition(uriInfo, request, taxonomyId, chromosome, position, BooleanQueryParam.valueOf(canonical), headers);
     }
 }

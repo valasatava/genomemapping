@@ -9,7 +9,8 @@ import org.bson.Document;
 import org.rcsb.genomemapping.constants.MongoCollections;
 import org.rcsb.genomemapping.constants.NamesConstants;
 import org.rcsb.genomemapping.utils.DBUtils;
-import org.rcsb.mojave.genomemapping.GenomicToStructureMapping;
+import org.rcsb.mojave.genomemapping.MultipleFeaturesMap;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 import org.rcsb.mojave.util.CommonConstants;
 
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ public class StructuresDaoMongoImpl implements StructuresDao {
     }
 
     @Override
-    public List<GenomicToStructureMapping> getStructuresByGeneName(int taxonomyId, String geneName, boolean canonical) {
+    public List<MultipleFeaturesMap> getStructuresByGeneName(int taxonomyId, String geneName, boolean canonical) {
 
-        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_GENOMIC_TO_STRUCTURE_MAPPING + "_" + taxonomyId);
+        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_EXONS_IN_3D + "_" + taxonomyId);
 
         List<Document> query;
         if (canonical)
@@ -42,18 +43,18 @@ public class StructuresDaoMongoImpl implements StructuresDao {
             query = Arrays.asList(new Document("$match", new Document(NamesConstants.COL_GENE_NAME, new Document("$eq", geneName))));
 
         AggregateIterable<Document> output = collection.aggregate(query);
-        List<GenomicToStructureMapping> found = new ArrayList<>();
+        List<MultipleFeaturesMap> found = new ArrayList<>();
         for (Document document : output) {
-            found.add(mapper.convertValue(document, GenomicToStructureMapping.class));
+            found.add(mapper.convertValue(document, MultipleFeaturesMap.class));
         }
 
         return found;
     }
 
     @Override
-    public List<GenomicToStructureMapping> getStructuresByGeneId(int taxonomyId, String geneId, boolean canonical) {
+    public List<MultipleFeaturesMap> getStructuresByGeneId(int taxonomyId, String geneId, boolean canonical) {
 
-        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_GENOMIC_TO_STRUCTURE_MAPPING + "_" + taxonomyId);
+        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_EXONS_IN_3D + "_" + taxonomyId);
 
         List<Document> query;
         if (canonical)
@@ -64,28 +65,28 @@ public class StructuresDaoMongoImpl implements StructuresDao {
             query = Arrays.asList(new Document("$match", new Document(NamesConstants.COL_GENE_ID, new Document("$eq", geneId))));
 
         AggregateIterable<Document> output = collection.aggregate(query);
-        List<GenomicToStructureMapping> found = new ArrayList<>();
+        List<MultipleFeaturesMap> found = new ArrayList<>();
         for (Document document : output) {
-            found.add(mapper.convertValue(document, GenomicToStructureMapping.class));
+            found.add(mapper.convertValue(document, MultipleFeaturesMap.class));
         }
 
         return found;
     }
 
     @Override
-    public List<GenomicToStructureMapping> getStructuresByGeneticPosition(int taxonomyId, String chromosome, int position) {
+    public List<PositionPropertyMap> getStructuresByGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical) {
 
-        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_GENOMIC_TO_STRUCTURE_MAPPING + "_" + taxonomyId);
-        List<Document> query1 = Arrays.asList(
+        MongoCollection<Document> collection = DBUtils.getMongoCollection(MongoCollections.VIEW_ON_EXONS_IN_3D + "_" + taxonomyId);
+        List<Document> query = Arrays.asList(
                 new Document("$match", new Document("$and", Arrays.asList(
                           new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
                         , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
                         , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))));
 
-        AggregateIterable<Document> output = collection.aggregate(query1);
-        List<GenomicToStructureMapping> found = new ArrayList<>();
+        AggregateIterable<Document> output = collection.aggregate(query);
+        List<PositionPropertyMap> found = new ArrayList<>();
         for (Document document : output) {
-            found.add(mapper.convertValue(document, GenomicToStructureMapping.class));
+            found.add(mapper.convertValue(document, PositionPropertyMap.class));
         }
 
         return found;

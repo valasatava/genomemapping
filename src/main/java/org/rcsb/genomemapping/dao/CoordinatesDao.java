@@ -1,6 +1,6 @@
 package org.rcsb.genomemapping.dao;
 
-import org.rcsb.genomemapping.model.Position;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface CoordinatesDao {
 
-    public List<Position> mapGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception;
+    List<PositionPropertyMap> mapGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception;
 }

@@ -10,10 +10,11 @@ import org.bson.Document;
 import org.rcsb.genomemapping.constants.MongoCollections;
 import org.rcsb.genomemapping.constants.NamesConstants;
 import org.rcsb.genomemapping.controller.CoordinatesController;
-import org.rcsb.genomemapping.model.Position;
+import org.rcsb.genomemapping.utils.AppHelper;
 import org.rcsb.genomemapping.utils.DBUtils;
-import org.rcsb.mojave.genomemapping.GeneTranscriptToProteinSequence;
-import org.rcsb.mojave.genomemapping.ProteinSequenceToProteinStructure;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
+import org.rcsb.mojave.genomemapping.SequenceToStructureFeaturesMap;
+import org.rcsb.mojave.genomemapping.TranscriptToSequenceFeaturesMap;
 import org.rcsb.mojave.util.CommonConstants;
 
 import java.util.ArrayList;
@@ -34,7 +35,9 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
     }
 
     @Override
-    public List<Position> mapGeneticPosition(int taxonomyId, String chromosome, int position) throws Exception {
+    public List<PositionPropertyMap> mapGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception {
+
+        List<PositionPropertyMap> results = new ArrayList<>();
 
         MongoCollection<Document> collection1 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_TRANSCRIPTS_TO_ISOFORMS + "_" + taxonomyId);
         List<Document> query1 = Arrays.asList(
@@ -44,35 +47,33 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
                                 , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))));
 
         AggregateIterable<Document> output1 = collection1.aggregate(query1);
-        List<GeneTranscriptToProteinSequence> isoformsFound = new ArrayList<>();
+        List<TranscriptToSequenceFeaturesMap> found1 = new ArrayList<>();
         for (Document document : output1) {
-            isoformsFound.add(mapper.convertValue(document, GeneTranscriptToProteinSequence.class));
+            found1.add(mapper.convertValue(document, TranscriptToSequenceFeaturesMap.class));
         }
 
-        List<Position> results = new ArrayList<>();
-        List<Position> isoforms = CoordinatesController.mapGeneticPositionToSequence(isoformsFound, position);
+        List<PositionPropertyMap> results1 = CoordinatesController.mapGeneticPositionToSequence(found1, position);
 
-        for (Position ip : isoforms) {
+        for (PositionPropertyMap position1 : results1) {
 
             MongoCollection<Document> collection2 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_ENTITIES_TO_ISOFORMS + "_" + taxonomyId);
             List<Document> query2 = Arrays.asList(
                     new Document("$match", new Document("$and", Arrays.asList(
-                          new Document(NamesConstants.COL_MOLECULE_ID, new Document("$eq", ip.getIsoformPosition().getMoleculeId()))
-                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$lte", ip.getIsoformPosition().getCoordinate()))
-                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$gte", ip.getIsoformPosition().getCoordinate()))))));
+                          new Document(NamesConstants.COL_MOLECULE_ID, new Document("$eq", position1.getMoleculeId()))
+                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$lte", position1.getCoordinates().getUniProtPosition()))
+                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$gte", position1.getCoordinates().getUniProtPosition()))))));
 
             AggregateIterable<Document> output2 = collection2.aggregate(query2);
 
-            List<ProteinSequenceToProteinStructure> entitiesFound = new ArrayList<>();
+            List<SequenceToStructureFeaturesMap> found2 = new ArrayList<>();
             for (Document document : output2) {
-                entitiesFound.add(mapper.convertValue(document, ProteinSequenceToProteinStructure.class));
+                found2.add(mapper.convertValue(document, SequenceToStructureFeaturesMap.class));
             }
 
-            List<Position> entities = CoordinatesController.mapSequencePositionToStructure(entitiesFound
-                    , ip.getIsoformPosition().getCoordinate());
-            for (Position ep : entities) {
-                Position clone = (Position) BeanUtils.cloneBean(ip);
-                clone.setStructurePosition(ep.getStructurePosition());
+            List<PositionPropertyMap> results2 = CoordinatesController.mapSequencePositionToStructure(found2, position1.getCoordinates().getUniProtPosition());
+            for (PositionPropertyMap position2 : results2) {
+                PositionPropertyMap clone = (PositionPropertyMap) BeanUtils.cloneBean(position1);
+                AppHelper.nullAwareBeanCopy(clone, position2);
                 results.add(clone);
             }
         }

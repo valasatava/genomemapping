@@ -2,9 +2,10 @@ package org.rcsb.genomemapping.service;
 
 import org.rcsb.genomemapping.dao.CoordinatesDao;
 import org.rcsb.genomemapping.dao.CoordinatesDaoMongoImpl;
-import org.rcsb.genomemapping.model.Position;
 import org.rcsb.genomemapping.response.ResponseMessagePositions;
 import org.rcsb.genomemapping.utils.AppHelper;
+import org.rcsb.genomemapping.utils.BooleanQueryParam;
+import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -28,9 +29,9 @@ public class CoordinatesServiceImpl implements CoordinatesService {
     }
 
     @Override
-    public Response mapGeneticPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, HttpHeaders headers) throws Exception {
+    public Response mapGeneticPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception {
 
-        List<Position> results = dao.mapGeneticPosition(taxonomyId, chromosome, position);
+        List<PositionPropertyMap> results = dao.mapGeneticPosition(taxonomyId, chromosome, position, canonical.getValue());
 
         ResponseMessagePositions responseMsg = new ResponseMessagePositions();
         responseMsg.setResults(results);

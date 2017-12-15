@@ -16,5 +16,5 @@ public interface StructuresService {
 
     Response getStructuresByGeneId(UriInfo uriInfo, Request request, int taxonomyId, String id, BooleanQueryParam canonical, HttpHeaders headers);
 
-    Response mapGenomicPositionToStructures(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, HttpHeaders headers);
+    Response getStructuresByGenomicPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers);
 }
