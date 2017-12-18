@@ -104,7 +104,7 @@ public class NamesConstants {
     public static final String COL_ENTITY_ID = "entityId";
     public static final String COL_CHAIN_ID = "chainId";
 
-    public static final String COL_COORDINATES_MAPPING = "coordinatesMapping";
+    public static final String COL_COORDINATES = "coordinates";
 
     public static final String COL_CODING_COORDINATES = "codingCoordinates";
     public static final String COL_ISOFORM_COORDINATES = "isoformCoordinates";
@@ -115,4 +115,5 @@ public class NamesConstants {
     public static final String COL_UNIPROT_POSITION = "uniProtPosition";
 
     public static final String COL_CANONICAL = "canonical";
+
 }

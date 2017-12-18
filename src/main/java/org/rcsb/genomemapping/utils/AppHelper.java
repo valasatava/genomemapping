@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class AppHelper {
 
@@ -26,6 +27,18 @@ public class AppHelper {
 			public void copyProperty(Object dest, String name, Object value)
 					throws IllegalAccessException, InvocationTargetException {
 				if(value != null) {
+					super.copyProperty(dest, name, value);
+				}
+			}
+		}.copyProperties(dest, source);
+	}
+
+	public static void nullAwareBeanCopy(Object dest, Object source, final List<String> props) throws IllegalAccessException, InvocationTargetException {
+		new BeanUtilsBean() {
+			@Override
+			public void copyProperty(Object dest, String name, Object value)
+					throws IllegalAccessException, InvocationTargetException {
+				if(value != null && props.contains(name)) {
 					super.copyProperty(dest, name, value);
 				}
 			}

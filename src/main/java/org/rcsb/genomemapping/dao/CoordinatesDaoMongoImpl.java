@@ -43,8 +43,8 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
         List<Document> query1 = Arrays.asList(
                 new Document("$match", new Document("$and", Arrays.asList(
                                   new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
-                                , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
-                                , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))));
+                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
+                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))));
 
         AggregateIterable<Document> output1 = collection1.aggregate(query1);
         List<TranscriptToSequenceFeaturesMap> found1 = new ArrayList<>();
@@ -60,8 +60,8 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
             List<Document> query2 = Arrays.asList(
                     new Document("$match", new Document("$and", Arrays.asList(
                           new Document(NamesConstants.COL_MOLECULE_ID, new Document("$eq", position1.getMoleculeId()))
-                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$lte", position1.getCoordinates().getUniProtPosition()))
-                        , new Document(NamesConstants.COL_COORDINATES_MAPPING+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$gte", position1.getCoordinates().getUniProtPosition()))))));
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$lte", position1.getCoordinate().getUniProtPosition()))
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_UNIPROT_POSITION, new Document("$gte", position1.getCoordinate().getUniProtPosition()))))));
 
             AggregateIterable<Document> output2 = collection2.aggregate(query2);
 
@@ -70,10 +70,14 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
                 found2.add(mapper.convertValue(document, SequenceToStructureFeaturesMap.class));
             }
 
-            List<PositionPropertyMap> results2 = CoordinatesController.mapSequencePositionToStructure(found2, position1.getCoordinates().getUniProtPosition());
+            List<PositionPropertyMap> results2 = CoordinatesController.mapSequencePositionToStructure(found2, position1.getCoordinate().getUniProtPosition());
             for (PositionPropertyMap position2 : results2) {
+
                 PositionPropertyMap clone = (PositionPropertyMap) BeanUtils.cloneBean(position1);
                 AppHelper.nullAwareBeanCopy(clone, position2);
+                clone.getCoordinate().setGeneticPosition(position1.getCoordinate().getGeneticPosition());
+                clone.getCoordinate().setmRNAPosition(position1.getCoordinate().getmRNAPosition());
+
                 results.add(clone);
             }
         }
