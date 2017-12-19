@@ -16,25 +16,25 @@ import java.util.List;
  */
 public class CoordinatesController {
 
-    public static int convertGenomicToProteinCoordinate(String orientation, int seqStart, int genStart, int genEnd, int genPos) {
+    public static int convertGenomicToProteinCoordinate(String orientation, int seqStart, int genStart, int genPos) {
 
         int seqPos = -1;
         if (orientation.equals("-")) {
-            int delta = genEnd - genPos + 1;
+            int delta = genStart - genPos + 1;
             seqPos = seqStart + (int) Math.ceil(delta / 3.0f) - 1;
-        } else if (orientation.equals("-")) {
-            int delta = genPos - genStart;
+        } else if (orientation.equals("+")) {
+            int delta = genPos - genStart + 1;
             seqPos = seqStart + (int) Math.ceil(delta / 3.0f) - 1;
         }
         return seqPos;
     }
 
-    public static int convertGenomicToMRNACoordinate(String orientation, int mRNAStart, int genStart, int genEnd, int genPos) {
+    public static int convertGenomicToMRNACoordinate(String orientation, int mRNAStart, int genStart, int genPos) {
 
         if (orientation.equals("+"))
             return mRNAStart + (genPos - genStart);
         else
-            return mRNAStart + (genEnd - genPos);
+            return mRNAStart + (genStart - genPos);
     }
 
     public static List<PositionPropertyMap> mapGeneticPositionToSequence(List<TranscriptToSequenceFeaturesMap> list, int genPos) throws InvocationTargetException, IllegalAccessException {
@@ -50,17 +50,18 @@ public class CoordinatesController {
 
                 int genStart = c.getStart().getGeneticPosition();
                 int genEnd = c.getEnd().getGeneticPosition();
-                int seqStart = c.getStart().getUniProtPosition();
 
+                int seqStart = c.getStart().getUniProtPosition();
                 int mRNAStart = c.getStart().getmRNAPosition();
 
-                if ((genStart <= genPos) && (genPos <= genEnd)) {
+                if ( ( transcript.getOrientation().equals("+") && (genStart <= genPos) && (genPos <= genEnd) )
+                        || (transcript.getOrientation().equals("-") && (genEnd <= genPos) && (genPos <= genStart)) ){
 
-                    int seqPos = convertGenomicToProteinCoordinate(transcript.getOrientation(), seqStart, genStart, genEnd, genPos);
-                    position.setGeneticPosition(genPos);
-
-                    int mRNAPos = convertGenomicToMRNACoordinate(transcript.getOrientation(), mRNAStart, genStart, genEnd, genPos);
+                    int mRNAPos = convertGenomicToMRNACoordinate(transcript.getOrientation(), mRNAStart, genStart, genPos);
                     position.setmRNAPosition(mRNAPos);
+
+                    int seqPos = convertGenomicToProteinCoordinate(transcript.getOrientation(), seqStart, genStart, genPos);
+                    position.setGeneticPosition(genPos);
                     position.setUniProtPosition(seqPos);
 
                     mapped = true;
