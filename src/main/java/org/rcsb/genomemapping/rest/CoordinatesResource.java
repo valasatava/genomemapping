@@ -52,4 +52,19 @@ public class CoordinatesResource {
     {
         return service.mapGenomicPosition(uriInfo, request, taxonomyId, chromosome, position, BooleanQueryParam.valueOf(canonical), headers);
     }
+
+    @GET
+    @Path(AppConstants.PATH_STRUCTURE + AppConstants.PATH_SEPARATOR )
+    @Produces({MediaType.APPLICATION_JSON + "; charset=utf-8"})
+    public Response mapPdbSeqPosition(
+            @Context UriInfo uriInfo,
+            @Context Request request,
+            @QueryParam(value = "entryId") final String entryId,
+            @QueryParam(value = "entityId") final String entityId,
+            @QueryParam(value = "position") final int position,
+            @QueryParam(value = "canonical") final String canonical,
+            @Context HttpHeaders headers) throws Exception
+    {
+        return service.mapPdbSeqPosition(uriInfo, request, entryId, entityId, position, BooleanQueryParam.valueOf(canonical), headers);
+    }
 }

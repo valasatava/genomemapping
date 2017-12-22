@@ -29,6 +29,19 @@ public class CoordinatesController {
         return seqPos;
     }
 
+    public static int convertProteinCoordinateToGenomic(String orientation, int startTo, int startFrom, int pos) {
+
+        int posTo = -1;
+        int delta = (pos - startFrom)*3;
+
+        if (orientation.equals("-")) {
+            posTo = startTo - delta;
+        } else if (orientation.equals("+")) {
+            posTo = startTo + delta;
+        }
+        return posTo;
+    }
+
     public static int convertGenomicToMRNACoordinate(String orientation, int mRNAStart, int genStart, int genPos) {
 
         if (orientation.equals("+"))
@@ -116,10 +129,10 @@ public class CoordinatesController {
             }
 
             if (mapped) {
-                PositionPropertyMap pos = new PositionPropertyMap();
-                AppHelper.nullAwareBeanCopy(pos, isoform);
-                pos.setCoordinate(positionMapping);
-                results.add(pos);
+                PositionPropertyMap position = new PositionPropertyMap();
+                AppHelper.nullAwareBeanCopy(position, isoform);
+                position.setCoordinate(positionMapping);
+                results.add(position);
             }
         }
 
@@ -153,9 +166,52 @@ public class CoordinatesController {
 
             if (mapped) {
                 PositionPropertyMap position = new PositionPropertyMap();
-                AppHelper.nullAwareBeanCopy(pos, isoform);
+                AppHelper.nullAwareBeanCopy(position, isoform);
                 position.setCoordinate(positionMapping);
                 results.add(position);
+            }
+        }
+
+        return results;
+    }
+
+    public static List<PositionPropertyMap> mapSequencePositionToGenomic(List<TranscriptToSequenceFeaturesMap> list, int pos) throws InvocationTargetException, IllegalAccessException {
+
+        List<PositionPropertyMap> results = new ArrayList<>();
+
+        for (TranscriptToSequenceFeaturesMap transcript : list) {
+
+            boolean mapped = false;
+            PositionMapping position = new PositionMapping();
+            List<SegmentMapping> mapping = transcript.getCoordinates();
+            for (SegmentMapping c : mapping) {
+
+                int genStart = c.getStart().getGenomicPosition();
+                int mRNAStart = c.getStart().getmRNAPosition();
+
+                int seqStart = c.getStart().getUniProtPosition();
+                int seqEnd = c.getEnd().getUniProtPosition();
+
+                if ( (seqStart <= pos) && (pos <= seqEnd) ){
+
+                    position.setUniProtPosition(pos);
+
+                    int genPos = convertProteinCoordinateToGenomic(transcript.getOrientation(), genStart, seqStart, pos);
+                    position.setGenomicPosition(genPos);
+
+                    int mRNAPos = convertGenomicToMRNACoordinate(transcript.getOrientation(), mRNAStart, genStart, genPos);
+                    position.setmRNAPosition(mRNAPos);
+
+                    mapped = true;
+                    break;
+                }
+            }
+
+            if (mapped) {
+                PositionPropertyMap posprop = new PositionPropertyMap();
+                AppHelper.nullAwareBeanCopy(posprop, transcript);
+                posprop.setCoordinate(position);
+                results.add(posprop);
             }
         }
 

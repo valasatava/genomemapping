@@ -5,6 +5,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
+import java.util.ArrayList;
+
 /**
  * Created by Yana Valasatava on 11/28/17.
  */
@@ -20,5 +22,12 @@ public class DBUtils {
         MongoCollection<Document> collection = mongoDatabase.getCollection(collectionName);
 
         return collection;
+    }
+
+    public static boolean collectionExists(String collectionName) {
+
+        MongoClient client = new MongoClient(MONGO_DB_IP);
+        return client.getDatabase(MONGO_DB_NAME).listCollectionNames()
+                .into(new ArrayList<String>()).contains(collectionName);
     }
 }

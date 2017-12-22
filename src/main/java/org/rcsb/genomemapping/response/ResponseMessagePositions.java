@@ -9,7 +9,7 @@ import java.util.List;
 @XmlRootElement(name = "response") // needed if we also want to generate XML
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({ PositionPropertyMap.class })
-public class ResponseMessagePositions extends ResponseMessage implements Serializable{
+public class ResponseMessagePositions extends ResponseMessage implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 

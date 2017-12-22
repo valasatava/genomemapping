@@ -7,6 +7,7 @@ public class MongoCollections {
 
     // CORE collections
     public static final String COLL_CORE_TRANSCRIPTS = "core_transcripts";
+    public static final String COLL_ENTITY = "CoreEntity";
 
     // MAPPING collections
     public static final String COLL_MAPPING_TRANSCRIPTS_TO_ISOFORMS = "mapping_transcripts_to_isoforms";

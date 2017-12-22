@@ -36,6 +36,31 @@ public class CoordinatesServiceImpl implements CoordinatesService {
         ResponseMessagePositions responseMsg = new ResponseMessagePositions();
         responseMsg.setResults(results);
         responseMsg.setCount(results.size());
+        responseMsg.setCode(Response.Status.OK.getStatusCode());
+        responseMsg.setMessage("Found " + results.size() + " results for position: " + position+" on chromosome "+chromosome);
+        responseMsg.setStatus(Response.Status.OK.getStatusCode());
+        responseMsg.setLink("http://www.rcsb.org/");
+
+        Response.ResponseBuilder responseBuilder =  Response
+                .status(Response.Status.OK)
+                .type(AppHelper.getResponseMediaType("json", headers))
+                .entity(responseMsg);
+
+        return responseBuilder.build();
+    }
+
+    @Override
+    public Response mapPdbSeqPosition(UriInfo uriInfo, Request request, String entryId, String entityId, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception {
+
+        List<PositionPropertyMap> results = dao.mapPdbSeqPosition(entryId, entityId, position, canonical.getValue());
+
+        ResponseMessagePositions responseMsg = new ResponseMessagePositions();
+        responseMsg.setResults(results);
+        responseMsg.setCount(results.size());
+        responseMsg.setCode(Response.Status.OK.getStatusCode());
+        responseMsg.setMessage("Found " + results.size() + " results for id: " + entryId);
+        responseMsg.setStatus(Response.Status.OK.getStatusCode());
+        responseMsg.setLink("http://www.rcsb.org/");
 
         Response.ResponseBuilder responseBuilder =  Response
                 .status(Response.Status.OK)

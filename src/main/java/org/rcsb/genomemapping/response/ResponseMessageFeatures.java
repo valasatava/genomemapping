@@ -9,7 +9,7 @@ import java.util.List;
 @XmlRootElement(name = "response") // needed if we also want to generate XML
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({ MultipleFeaturesMap.class })
-public class ResponseMessageFeatures extends ResponseMessage implements Serializable{
+public class ResponseMessageFeatures extends ResponseMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
