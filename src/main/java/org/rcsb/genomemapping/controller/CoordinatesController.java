@@ -48,8 +48,8 @@ public class CoordinatesController {
             List<SegmentMapping> mapping = transcript.getCoordinates();
             for (SegmentMapping c : mapping) {
 
-                int genStart = c.getStart().getGeneticPosition();
-                int genEnd = c.getEnd().getGeneticPosition();
+                int genStart = c.getStart().getGenomicPosition();
+                int genEnd = c.getEnd().getGenomicPosition();
 
                 int seqStart = c.getStart().getUniProtPosition();
                 int mRNAStart = c.getStart().getmRNAPosition();
@@ -61,7 +61,7 @@ public class CoordinatesController {
                     position.setmRNAPosition(mRNAPos);
 
                     int seqPos = convertGenomicToProteinCoordinate(transcript.getOrientation(), seqStart, genStart, genPos);
-                    position.setGeneticPosition(genPos);
+                    position.setGenomicPosition(genPos);
                     position.setUniProtPosition(seqPos);
 
                     mapped = true;
@@ -79,14 +79,13 @@ public class CoordinatesController {
         return results;
     }
 
-    public static int convertProteinToStructureCoordinate(int structStart, int structEnd, int seqStart, int seqPos) {
+    public static int convertCoordinateBaseOne(int startTo, int endTo, int startFrom, int pos) {
 
         int structPos = -1;
-
-        int delta = seqPos - seqStart;
-        structPos = structStart+delta;
-        if (structPos > structEnd)
-            structPos = structEnd;
+        int delta = pos - startFrom;
+        structPos = startTo+delta;
+        if (structPos > endTo)
+            structPos = endTo;
 
         return structPos;
     }
@@ -102,15 +101,15 @@ public class CoordinatesController {
             List<SegmentMapping> mapping = isoform.getCoordinates();
             for (SegmentMapping c : mapping) {
 
-                int structStart = c.getStart().getSeqResPosition();
-                int structEnd = c.getEnd().getSeqResPosition();
+                int structStart = c.getStart().getPdbSeqPosition();
+                int structEnd = c.getEnd().getPdbSeqPosition();
                 int seqStart = c.getStart().getUniProtPosition();
                 int seqEnd = c.getEnd().getUniProtPosition();
 
                 if ( (seqStart<=seqPos) && (seqPos<=seqEnd) ) {
-                    int structPos = convertProteinToStructureCoordinate(structStart, structEnd, seqStart, seqPos);
+                    int structPos = convertCoordinateBaseOne(structStart, structEnd, seqStart, seqPos);
                     positionMapping.setUniProtPosition(seqPos);
-                    positionMapping.setSeqResPosition(structPos);
+                    positionMapping.setPdbSeqPosition(structPos);
                     mapped = true;
                     break;
                 }
@@ -121,6 +120,42 @@ public class CoordinatesController {
                 AppHelper.nullAwareBeanCopy(pos, isoform);
                 pos.setCoordinate(positionMapping);
                 results.add(pos);
+            }
+        }
+
+        return results;
+    }
+
+    public static List<PositionPropertyMap> mapStructurePositionToSequence(List<SequenceToStructureFeaturesMap> list, int pos) throws InvocationTargetException, IllegalAccessException {
+
+        List<PositionPropertyMap> results = new ArrayList<>();
+
+        for (SequenceToStructureFeaturesMap isoform : list) {
+
+            boolean mapped = false;
+            PositionMapping positionMapping = new PositionMapping();
+            List<SegmentMapping> mapping = isoform.getCoordinates();
+            for (SegmentMapping c : mapping) {
+
+                int structStart = c.getStart().getPdbSeqPosition();
+                int structEnd = c.getEnd().getPdbSeqPosition();
+                int seqStart = c.getStart().getUniProtPosition();
+                int seqEnd = c.getEnd().getUniProtPosition();
+
+                if ( (structStart<=pos) && (pos<=structEnd) ) {
+                    int seqPos = convertCoordinateBaseOne(seqStart, seqEnd, structStart, pos);
+                    positionMapping.setUniProtPosition(seqPos);
+                    positionMapping.setPdbSeqPosition(pos);
+                    mapped = true;
+                    break;
+                }
+            }
+
+            if (mapped) {
+                PositionPropertyMap position = new PositionPropertyMap();
+                AppHelper.nullAwareBeanCopy(pos, isoform);
+                position.setCoordinate(positionMapping);
+                results.add(position);
             }
         }
 

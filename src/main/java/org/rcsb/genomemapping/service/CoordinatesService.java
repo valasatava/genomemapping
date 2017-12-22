@@ -12,5 +12,5 @@ import javax.ws.rs.core.UriInfo;
  */
 public interface CoordinatesService {
 
-    Response mapGeneticPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception;
+    Response mapGenomicPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception;
 }

@@ -50,6 +50,6 @@ public class CoordinatesResource {
             @QueryParam(value = "canonical") final String canonical,
             @Context HttpHeaders headers) throws Exception
     {
-        return service.mapGeneticPosition(uriInfo, request, taxonomyId, chromosome, position, BooleanQueryParam.valueOf(canonical), headers);
+        return service.mapGenomicPosition(uriInfo, request, taxonomyId, chromosome, position, BooleanQueryParam.valueOf(canonical), headers);
     }
 }

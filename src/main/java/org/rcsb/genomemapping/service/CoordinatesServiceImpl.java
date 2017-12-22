@@ -29,9 +29,9 @@ public class CoordinatesServiceImpl implements CoordinatesService {
     }
 
     @Override
-    public Response mapGeneticPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception {
+    public Response mapGenomicPosition(UriInfo uriInfo, Request request, int taxonomyId, String chromosome, int position, BooleanQueryParam canonical, HttpHeaders headers) throws Exception {
 
-        List<PositionPropertyMap> results = dao.mapGeneticPosition(taxonomyId, chromosome, position, canonical.getValue());
+        List<PositionPropertyMap> results = dao.mapGenomicPosition(taxonomyId, chromosome, position, canonical.getValue());
 
         ResponseMessagePositions responseMsg = new ResponseMessagePositions();
         responseMsg.setResults(results);

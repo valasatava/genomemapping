@@ -80,8 +80,8 @@ public class StructuresDaoMongoImpl implements StructuresDao {
         List<Document> query = Arrays.asList(
                 new Document("$match", new Document("$and", Arrays.asList(
                           new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
-                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
-                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))));
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENOMIC_POSITION, new Document("$lte", position))
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENOMIC_POSITION, new Document("$gte", position))))));
 
         AggregateIterable<Document> output = collection.aggregate(query);
         List<PositionPropertyMap> found = new ArrayList<>();

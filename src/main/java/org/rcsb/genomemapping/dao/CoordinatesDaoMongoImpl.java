@@ -10,7 +10,6 @@ import org.bson.Document;
 import org.rcsb.genomemapping.constants.MongoCollections;
 import org.rcsb.genomemapping.constants.NamesConstants;
 import org.rcsb.genomemapping.controller.CoordinatesController;
-import org.rcsb.genomemapping.utils.AppHelper;
 import org.rcsb.genomemapping.utils.DBUtils;
 import org.rcsb.mojave.genomemapping.PositionPropertyMap;
 import org.rcsb.mojave.genomemapping.SequenceToStructureFeaturesMap;
@@ -34,26 +33,25 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
         mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     }
 
-    @Override
-    public List<PositionPropertyMap> mapGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception {
-
-        List<PositionPropertyMap> results = new ArrayList<>();
+    public List<PositionPropertyMap> mapGenomicPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception {
 
         MongoCollection<Document> collection1 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_TRANSCRIPTS_TO_ISOFORMS + "_" + taxonomyId);
+
         List<Document> query1 = Arrays.asList(
-                new Document("$match", new Document("$or", Arrays.asList(
-                          new Document("$and", Arrays.asList(
-                                  new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
-                                , new Document(NamesConstants.COL_ORIENTATION, new Document("$eq", "+"))
-                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
-                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))
-                        , new Document("$and", Arrays.asList(
-                                new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
-                                , new Document(NamesConstants.COL_ORIENTATION, new Document("$eq", "-"))
-                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$lte", position))
-                                , new Document(NamesConstants.COL_COORDINATES+"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_GENETIC_POSITION, new Document("$gte", position))))
-                    )
-                )));
+                    new Document("$match", new Document("$or", Arrays.asList(
+                            new Document("$and", Arrays.asList(
+                                      new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
+                                    , new Document(NamesConstants.COL_CANONICAL, new Document("$eq", canonical))
+                                    , new Document(NamesConstants.COL_ORIENTATION, new Document("$eq", "+"))
+                                    , new Document(NamesConstants.COL_COORDINATES + "." + CommonConstants.COL_START + "." + NamesConstants.COL_GENOMIC_POSITION, new Document("$lte", position))
+                                    , new Document(NamesConstants.COL_COORDINATES + "." + CommonConstants.COL_END + "." + NamesConstants.COL_GENOMIC_POSITION, new Document("$gte", position))))
+                            , new Document("$and", Arrays.asList(
+                                      new Document(NamesConstants.COL_CHROMOSOME, new Document("$eq", chromosome))
+                                    , new Document(NamesConstants.COL_CANONICAL, new Document("$eq", canonical))
+                                    , new Document(NamesConstants.COL_ORIENTATION, new Document("$eq", "-"))
+                                    , new Document(NamesConstants.COL_COORDINATES + "." + CommonConstants.COL_END + "." + NamesConstants.COL_GENOMIC_POSITION, new Document("$lte", position))
+                                    , new Document(NamesConstants.COL_COORDINATES + "." + CommonConstants.COL_START + "." + NamesConstants.COL_GENOMIC_POSITION, new Document("$gte", position))))
+                    ))));
 
         AggregateIterable<Document> output1 = collection1.aggregate(query1);
         List<TranscriptToSequenceFeaturesMap> found1 = new ArrayList<>();
@@ -63,9 +61,11 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
 
         List<PositionPropertyMap> results1 = CoordinatesController.mapGeneticPositionToSequence(found1, position);
 
+        List<PositionPropertyMap> results = new ArrayList<>();
         for (PositionPropertyMap position1 : results1) {
 
-            MongoCollection<Document> collection2 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_ENTITIES_TO_ISOFORMS + "_" + taxonomyId);
+            MongoCollection<Document> collection2 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_ENTITIES_TO_ISOFORMS);
+
             List<Document> query2 = Arrays.asList(
                     new Document("$match", new Document("$and", Arrays.asList(
                           new Document(NamesConstants.COL_MOLECULE_ID, new Document("$eq", position1.getMoleculeId()))
@@ -86,8 +86,10 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
             for (PositionPropertyMap position2 : results2) {
 
                 PositionPropertyMap clone = (PositionPropertyMap) BeanUtils.cloneBean(position1);
-                AppHelper.nullAwareBeanCopy(clone, position2);
-                clone.getCoordinate().setGeneticPosition(position1.getCoordinate().getGeneticPosition());
+                clone.setEntryId(position2.getEntryId());
+                clone.setEntityId(position2.getEntityId());
+                clone.setChainId(position2.getChainId());
+                clone.getCoordinate().setGenomicPosition(position1.getCoordinate().getGenomicPosition());
                 clone.getCoordinate().setmRNAPosition(position1.getCoordinate().getmRNAPosition());
 
                 results.add(clone);
@@ -95,4 +97,37 @@ public class CoordinatesDaoMongoImpl implements CoordinatesDao {
         }
         return results;
     }
+
+    @Override
+    public List<PositionPropertyMap> mapPdbSeqPosition(String entryId, String entityId, int position, boolean canonical) throws Exception {
+
+        List<PositionPropertyMap> results = new ArrayList<>();
+
+        MongoCollection<Document> collection1 = DBUtils.getMongoCollection(MongoCollections.COLL_MAPPING_ENTITIES_TO_ISOFORMS);
+
+        List<Document> query1 = Arrays.asList(
+                new Document("$match", new Document("$and", Arrays.asList(
+                          new Document(NamesConstants.COL_ENTRY_ID, new Document("$eq", entryId))
+                        , new Document(NamesConstants.COL_ENTITY_ID, new Document("$eq", entityId))
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_START+"."+ NamesConstants.COL_PDBSEQ_POSITION, new Document("$lte", position))
+                        , new Document(NamesConstants.COL_COORDINATES +"."+ CommonConstants.COL_END+"."+ NamesConstants.COL_PDBSEQ_POSITION, new Document("$gte", position))))));
+
+        AggregateIterable<Document> output1 = collection1.aggregate(query1);
+
+        List<SequenceToStructureFeaturesMap> found1 = new ArrayList<>();
+        for (Document document : output1) {
+            found1.add(mapper.convertValue(document, SequenceToStructureFeaturesMap.class));
+        }
+
+        if (found1.size() == 0)
+            return  results;
+
+        List<PositionPropertyMap> results1 = CoordinatesController.mapStructurePositionToSequence(found1, position);
+        for (PositionPropertyMap position1 : results1) {
+
+        }
+
+        return results;
+    }
+
 }

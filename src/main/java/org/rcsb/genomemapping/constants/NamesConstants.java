@@ -110,9 +110,11 @@ public class NamesConstants {
     public static final String COL_ISOFORM_COORDINATES = "isoformCoordinates";
     public static final String COL_STRUCTURE_COORDINATES = "structureCoordinates";
 
-    public static final String COL_GENETIC_POSITION = "geneticPosition";
+    public static final String COL_GENOMIC_POSITION = "genomicPosition";
     public static final String COL_MRNA_POSITION = "mRNAPosition";
     public static final String COL_UNIPROT_POSITION = "uniProtPosition";
+    public static final String COL_PDBSEQ_POSITION = "pdbSeqPosition";
+
 
     public static final String COL_CANONICAL = "canonical";
 

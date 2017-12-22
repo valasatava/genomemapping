@@ -9,5 +9,6 @@ import java.util.List;
  */
 public interface CoordinatesDao {
 
-    List<PositionPropertyMap> mapGeneticPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception;
+    List<PositionPropertyMap> mapGenomicPosition(int taxonomyId, String chromosome, int position, boolean canonical) throws Exception;
+    List<PositionPropertyMap> mapPdbSeqPosition(String entryId, String entityId, int position, boolean canonical) throws Exception;
 }
