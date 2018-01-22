@@ -117,7 +117,7 @@ public class LoadMappingGeneTranscriptsToProteinIsoforms extends AbstractLoader 
     public static Dataset<Row> processTranscripts(Dataset<Row> transcripts) {
 
         JavaSparkContext jsc = new JavaSparkContext(sparkSession.sparkContext());
-        Broadcast<String> bc = jsc.broadcast(getOrganism());
+        Broadcast<Integer> bc = jsc.broadcast(getTaxonomyId());
 
         JavaRDD<Row> rdd = transcripts
                 .toJavaRDD()

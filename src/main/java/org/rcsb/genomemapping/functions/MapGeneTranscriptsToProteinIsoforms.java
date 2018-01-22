@@ -13,6 +13,7 @@ import org.biojava.nbio.core.exceptions.TranslationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rcsb.genomemapping.constants.CommonConstants;
+import org.rcsb.genomemapping.utils.GenomeDataUtils;
 import org.rcsb.genomemapping.utils.RowUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +28,10 @@ public class MapGeneTranscriptsToProteinIsoforms implements FlatMapFunction<Tupl
 
     private static final Logger logger = LoggerFactory.getLogger(MapGeneTranscriptsToProteinIsoforms.class);
 
-    public static String organism;
+    public static int taxonomyId;
 
-    public MapGeneTranscriptsToProteinIsoforms(Broadcast<String> bc) {
-        organism = bc.getValue();
+    public MapGeneTranscriptsToProteinIsoforms(Broadcast<Integer> bc) {
+        taxonomyId = bc.getValue();
     }
 
     public static Map<String, JSONObject> getTranscriptsMap(JSONArray isoforms) {
@@ -108,7 +109,7 @@ public class MapGeneTranscriptsToProteinIsoforms implements FlatMapFunction<Tupl
                     JSONArray isoComments = comment.getJSONArray("isoforms");
                     for (int q=0; q<isoComments.length(); q++) {
                         JSONObject isoComment = isoComments.getJSONObject(q);
-                        if (isoComment.getJSONArray("ids").toList().contains(iso.getString("id"))) {
+                        if (isoComment.getJSONArray("ids").toString().contains(iso.getString("id"))) {
                             iso.put("sequenceStatus", isoComment.getString("sequenceStatus"));
                             iso.put(CommonConstants.COL_CANONICAL, iso.get("sequenceStatus").equals("displayed") ? true : false);
                             return iso;
@@ -218,8 +219,8 @@ public class MapGeneTranscriptsToProteinIsoforms implements FlatMapFunction<Tupl
 
                     String sequence;
                     try {
-                        GenomeUtils.setGenome(organism);
-                        sequence = GenomeUtils.getProteinSequence(strand, GenomeUtils.getTranscriptSequence(chr, cds));
+                        GenomeDataUtils.setTaxonomyId(taxonomyId);
+                        sequence = GenomeDataUtils.getProteinSequence(strand, GenomeDataUtils.getTranscriptSequence(chr, cds));
                     } catch (CompoundNotFoundException e) {
                         logger.error("Could not construct DNA sequence for {}: {}", txptId, e.getCause());
                         continue;
